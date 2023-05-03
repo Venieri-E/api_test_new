@@ -80,14 +80,47 @@ class test_new_location:
 
         result_get = requests.get(get_url)
         if result_get.status_code == 200:
-            print("Adress correct")
+            print("Status code = 200")
         else:
-            print("Adress not correct")
+            print("Error")
         check_adress = result_get.json()
         check_adress_info = check_adress.get("address")
         print("Message  : " + str(check_adress_info))
         assert check_adress_info == "100 Main street, US "
         print("Adress correctt")
+
+        """"Check if location is delete"""
+        delete_resourse = "/maps/api/place/delete/json"  # Resource of method DELETE
+        delete_url = base_url + delete_resourse + key
+        print(delete_url)
+        json_for_delete_new_location = {
+            "place_id": place_id
+        }
+        result_delete = requests.delete(delete_url, json=json_for_delete_new_location)
+        print(result_delete.text)
+        if result_delete.status_code == 200:
+            print("Status code = 200")
+        else:
+            print("Error")
+        check_status = result_delete.json()
+        check_status_info = check_status.get("status")
+        print("Message  : " + str(check_status_info))
+        assert check_status_info == "OK"
+        print("Status correctt")
+
+        """"Check if location was delete"""
+        result_get = requests.get(get_url)
+        print(result_get.text)
+        assert  404 == result_get.status_code
+        if result_get.status_code == 404:
+            print("Succes deleted location")
+        else:
+            print("Error")
+        check_msg = result_get.json()
+        check_msg_info = check_msg.get("msg")
+        print("Message  : " + check_msg_info)
+        assert check_msg_info == "Get operation failed, looks like place_id  doesn't exists"
+        print("Testing of Test_new_location was sucessful")
 
 new_place = test_new_location()
 new_place.test_create_new_location()
